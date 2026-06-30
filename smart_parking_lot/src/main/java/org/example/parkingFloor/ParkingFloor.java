@@ -1,49 +1,45 @@
 package org.example.parkingFloor;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.example.ParkingSpot;
 import org.example.SpotType;
 import org.example.Vehicle;
-import org.example.displaypanel.FloorDisplayPanel;
-import org.example.interfaces.IParkingFloor;
+import org.example.displayPanel.FloorDisplayPanel;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
-public class ParkingFloor implements IParkingFloor {
-
-    private  final String floorId;
-
-    private final Map<SpotType, Set<ParkingSpot>> spotTypeSetMap;
-
-    private final FloorDisplayPanel floorDisplayPanel;
-
-    private boolean underMaintaince;
+public class ParkingFloor {
+    private final String floorId;
+    private final Map<SpotType, Set<ParkingSpot>> spotMap;
+    private final FloorDisplayPanel displayPanel;
+    private boolean underMaintenance;
 
     public ParkingFloor(String floorId) {
         this.floorId = floorId;
-        this.spotTypeSetMap = new HashMap<>();
-        this.floorDisplayPanel = new FloorDisplayPanel(floorId);
-        this.underMaintaince = false;
-    }
-
-    @Override
-    public void addSpot(ParkingSpot parkingSpot) {
-    spotTypeSetMap.get(parkingSpot.getSpotType()).add(parkingSpot);
-    }
-
-    @Override
-    public ParkingSpot getAvailableSpots(Vehicle vehicle) {
-        if(underMaintaince)
-        {
-            return null;
+        this.spotMap = new HashMap<>();
+        this.displayPanel = new FloorDisplayPanel(floorId);
+        this.underMaintenance = false;
+        for (SpotType type : SpotType.values()) {
+            spotMap.put(type, new HashSet<>());
         }
-        for(Map.Entry<SpotType,Set<ParkingSpot>> entry:spotTypeSetMap.entrySet())
-        {
-            for(ParkingSpot spot: entry.getValue())
-            {
-                if(spot.canFitVehicle(vehicle))
-                {
+    }
+
+    public void addSpot(ParkingSpot spot) {
+        spotMap.get(spot.getSpotType()).add(spot);
+    }
+
+    public ParkingSpot getAvailableSpot(Vehicle vehicle) {
+        //KISS
+      if (underMaintenance) {
+        return null;
+      }
+
+
+        for (Map.Entry<SpotType, Set<ParkingSpot>> entry : spotMap.entrySet()) {
+            for (ParkingSpot spot : entry.getValue()) {
+                if (spot.canFitVehicle(vehicle)) {
                     return spot;
                 }
             }
@@ -51,23 +47,53 @@ public class ParkingFloor implements IParkingFloor {
         return null;
     }
 
-    @Override
+    public Set<ParkingSpot> getAllSpots() {
+        Set<ParkingSpot> allSpots = new HashSet<>();
+        for (Set<ParkingSpot> set : spotMap.values()) {
+            allSpots.addAll(set);
+        }
+        return allSpots;
+    }
+
     public String getFloorId() {
-        return "";
+        return floorId;
     }
 
-    @Override
-    public boolean isUnderMaintaince() {
-        return false;
+    public boolean isUnderMaintenance() {
+        return underMaintenance;
     }
 
-    @Override
-    public void setUnderMaintaince(boolean status) {
-
+    public void setUnderMaintenance(boolean status) {
+        this.underMaintenance = status;
     }
 
-    @Override
+    public Map<SpotType, Set<ParkingSpot>> getSpotMap() {
+        return spotMap;
+    }
+
     public void showFloorDisplay() {
+        displayPanel.displayAvailableSpots(spotMap, underMaintenance);
+    }
 
+    public boolean isFull() {
+        for (Set<ParkingSpot> spots : spotMap.values()) {
+            for (ParkingSpot spot : spots) {
+                if (!spot.isOccupied()) {
+                    return false; // At least one spot is available
+                }
+            }
+        }
+        return true; // All spots are occupied
+    }
+
+    public ParkingSpot getSpotById(String spotId) {
+        for (Set<ParkingSpot> spots : spotMap.values()) {
+            for (ParkingSpot spot : spots) {
+                if (spot.getId().equals(spotId)) {
+                    return spot;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -1,21 +1,19 @@
 package org.example;
 
 public class Vehicle {
+    private final String licenseNumber;
+    private final VehicleType type;
 
-    private final String licenceNumber;
-
-    private final VehicleType  vehicleType;
-
-    public Vehicle(String licenceNumber, VehicleType vehicleType) {
-        this.licenceNumber = licenceNumber;
-        this.vehicleType = vehicleType;
+    public Vehicle(String licenseNumber, VehicleType type) {
+        this.licenseNumber = licenseNumber;
+        this.type = type;
     }
 
-    public String getLicenceNumber() {
-        return licenceNumber;
+    public String getLicenseNumber() {
+        return licenseNumber;
     }
 
-    public VehicleType getVehicleType() {
-        return vehicleType;
+    public VehicleType getType() {
+        return type;
     }
 }

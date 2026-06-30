@@ -1,5 +1,6 @@
 package org.example;
 
-enum VehicleType {
-    CAR,BUS,TRUCK
+public enum VehicleType {
+    CAR, BUS, TRUCK
 }
+

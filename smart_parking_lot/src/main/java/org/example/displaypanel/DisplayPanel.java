@@ -1,4 +1,5 @@
-package org.example.displaypanel;
+package org.example.displayPanel;
 
-public class DisplayPanel {
+abstract class DisplayPanel {
+    public abstract void display();
 }
